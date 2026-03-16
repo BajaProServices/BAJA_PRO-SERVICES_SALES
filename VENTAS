@@ -1,0 +1,197 @@
+import React, { useState } from 'react';
+import { Sun, ShieldCheck, Zap, ArrowRight, MapPin, CheckCircle2, X, Maximize2, MessageSquare } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// --- 1. CONFIGURACIÓN DE DATOS (PROYECTOS E IMÁGENES) ---
+const projects = [
+  { 
+    id: 1, 
+    title: "Rancho Santa Rosa", 
+    category: "Bombeo Solar Agro", 
+    location: "Ejido V. Bonfil, BCS",
+    desc: "Suministro eléctrico para bomba de 30HP. 150 paneles de 580W.",
+    image: "/assets/proyecto-bombeo.jpg" // Necesitas esta imagen
+  },
+  { 
+    id: 2, 
+    title: "Casa de Playa Premium", 
+    category: "Residencial Híbrido", 
+    location: "Los Cabos, BCS",
+    desc: "Autosuficiencia total con baterías LiFePO4 de 20kWh y sistema Off-Grid.",
+    image: "/assets/proyecto-residencial.jpg" // Necesitas esta imagen
+  },
+  { 
+    id: 3, 
+    title: "Nave Industrial La Paz", 
+    category: "Comercial de Alta Potencia", 
+    location: "La Paz, BCS",
+    desc: "Interconexión en Media Tensión. Reducción del 95% en CFE.",
+    image: "/assets/proyecto-industrial.jpg" // Necesitas esta imagen
+  }
+];
+
+// --- 2. COMPONENTE GALERÍA LIGHTBOX (INTERACTIVO) ---
+const ImageGallery = ({ items }: { items: typeof projects }) => {
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+
+  const selectedProject = items.find(p => p.id === selectedId);
+
+  return (
+    <>
+      <div className="grid md:grid-cols-3 gap-8">
+        {items.map((project) => (
+          <motion.div 
+            key={project.id}
+            layoutId={`card-${project.id}`}
+            onClick={() => setSelectedId(project.id)}
+            className="group relative overflow-hidden rounded-3xl cursor-pointer bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all"
+            whileHover={{ y: -5 }}
+          >
+            <div className="aspect-[4/3] overflow-hidden">
+              <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+            </div>
+            <div className="p-6">
+              <span className="text-xs font-bold text-primary uppercase tracking-widest">{project.category}</span>
+              <h3 className="text-xl font-bold text-secondary mt-1">{project.title}</h3>
+              <p className="text-slate-500 text-sm flex items-center gap-1 mt-2"><MapPin className="w-3 h-3" /> {project.location}</p>
+            </div>
+            <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                <Maximize2 className="w-4 h-4 text-secondary" />
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      <AnimatePresence>
+        {selectedId && selectedProject && (
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-secondary/95 backdrop-blur-lg z-[100] p-6 flex items-center justify-center"
+            onClick={() => setSelectedId(null)}
+          >
+            <motion.div 
+              layoutId={`card-${selectedProject.id}`}
+              className="bg-white rounded-3xl overflow-hidden max-w-4xl w-full shadow-2xl relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img src={selectedProject.image} alt={selectedProject.title} className="w-full h-auto object-cover max-h-[60vh]" />
+              <div className="p-10">
+                <span className="text-sm font-bold text-primary uppercase tracking-widest">{selectedProject.category}</span>
+                <h2 className="text-3xl font-black text-secondary mt-2">{selectedProject.title}</h2>
+                <p className="text-slate-600 mt-4 leading-relaxed">{selectedProject.desc}</p>
+                <div className="flex items-center justify-between mt-8 border-t pt-6">
+                    <p className="text-slate-500 text-sm flex items-center gap-1.5"><MapPin className="w-4 h-4 text-primary" /> {selectedProject.location}</p>
+                    <a href="https://wa.me/5216122198325" className="bg-primary text-secondary px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2">
+                        Cotizar Proyecto Similar <ArrowRight className="w-4 h-4" />
+                    </a>
+                </div>
+              </div>
+              <button onClick={() => setSelectedId(null)} className="absolute top-5 right-5 bg-white p-2 rounded-full shadow-lg">
+                <X className="w-6 h-6 text-secondary" />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
+
+// --- 3. COMPONENTE PRINCIPAL DE LA LANDING ---
+export default function BajaProLanding() {
+  return (
+    <div className="font-sans antialiased text-secondary select-none bg-white">
+      
+      {/* HEADER & HERO */}
+      <header className="relative min-h-[90vh] flex items-center bg-secondary text-white overflow-hidden">
+        {/* IMAGEN DE FONDO REAL (CASA DE PLAYA LOS CABOS) */}
+        <div className="absolute inset-0 opacity-40 bg-[url('/assets/hero-baja.jpg')] bg-cover bg-center" />
+        
+        {/* Navbar */}
+        <nav className="absolute top-0 w-full z-50 py-6 px-6">
+          <div className="max-w-7xl mx-auto flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Sun className="w-7 h-7 text-primary font-bold" />
+              <span className="text-2xl font-black tracking-tighter text-white">BAJA <span className="text-primary">PROSERVICES</span></span>
+            </div>
+            <a href="https://wa.me/5216122198325" className="bg-primary hover:bg-primary-dark text-secondary px-6 py-3 rounded-full font-bold text-sm transition-all shadow-lg shadow-primary/20">
+              Cotizar Proyecto
+            </a>
+          </div>
+        </nav>
+
+        {/* Hero Content */}
+        <div className="max-w-7xl mx-auto px-6 relative z-10 pt-20">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
+              <ShieldCheck className="w-4 h-4" /> Certificación Federal SEP-CONOCER EC0586.01 · EC1181
+            </div>
+            <h1 className="text-5xl md:text-7xl font-black leading-tight mb-8 tracking-tighter">
+              Ingeniería que <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-amber-200">Domina el Sol</span> de BCS.
+            </h1>
+            <p className="text-slate-300 text-xl max-w-2xl mb-12 leading-relaxed">
+              No solo instalamos paneles; diseñamos autosuficiencia energética. Especialistas en diagnósticos técnicos y sistemas híbridos de alta gama.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-5">
+              <a href="https://wa.me/5216122198325" className="bg-primary hover:bg-primary-dark text-secondary px-10 py-5 rounded-full font-bold text-lg flex items-center justify-center gap-2 shadow-2xl shadow-primary/30 transition-all hover:scale-105">
+                Solicitar Asesoría Gratuita <MessageSquare className="w-5 h-5" />
+              </a>
+              <a href="#proyectos" className="bg-white/5 border border-white/20 hover:bg-white/10 text-white px-10 py-5 rounded-full font-bold text-lg transition-all text-center">
+                Ver Portafolio Real
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      </header>
+
+      {/* SECCIÓN DE GALERÍA DE PROYECTOS */}
+      <section id="proyectos" className="py-28 px-6 bg-slate-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-20 max-w-3xl mx-auto">
+            <span className="text-sm font-bold text-primary uppercase tracking-widest">Experiencia Demostrada</span>
+            <h2 className="text-4xl md:text-6xl font-black text-secondary mt-2 tracking-tighter">Nuestro Impacto en Baja California Sur</h2>
+            <p className="text-slate-600 text-lg mt-6 leading-relaxed">Mostramos con orgullo nuestras instalaciones. Ingeniería real, para clientes reales, en el clima real de BCS.</p>
+          </div>
+          
+          <ImageGallery items={projects} />
+
+        </div>
+      </section>
+
+      {/* BANNER DE DIAGNÓSTICO TÉCNICO (IMAGEN REAL + CONFIANZA) */}
+      <section className="bg-white py-10 px-6">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 bg-secondary rounded-[2rem] overflow-hidden shadow-2xl items-center">
+            {/* IMAGEN REAL DEL TÉCNICO TRABAJANDO */}
+            <div className="h-full">
+                <img src="/assets/diagnostico-tech.jpg" alt="Técnico BAJA PROSERVICES diagnosticando Generac" className="w-full h-full object-cover" />
+            </div>
+            <div className="p-12 md:p-16 text-white space-y-6">
+                <Zap className="w-12 h-12 text-primary" />
+                <h2 className="text-4xl font-black text-white leading-tight tracking-tighter">¿Problemas con tu Generador o Inversor?</h2>
+                <p className="text-slate-300 text-lg leading-relaxed font-medium">
+                  Somos especialistas en diagnóstico técnico avanzado. Realizamos inspecciones profundas, reparación de Generac y mantenimiento preventivo con reporte digital profesional inmediata.
+                </p>
+                <a href="https://wa.me/526121673200" className="bg-primary text-secondary px-10 py-4 rounded-full font-bold hover:scale-105 transition-transform inline-block text-lg shadow-xl shadow-primary/20">
+                  Agendar Revisión Técnica <ArrowRight className="inline ml-1 w-5 h-5" />
+                </a>
+            </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="py-16 border-t border-slate-100 text-center bg-slate-50 mt-10">
+        <div className="flex flex-col items-center gap-6 text-slate-500 text-sm">
+          <div className="flex gap-2 items-center">
+            <Sun className="w-6 h-6 text-primary font-bold" />
+            <span className="text-xl font-black tracking-tighter text-secondary">BAJA PROSERVICES</span>
+          </div>
+          <p className="flex items-center gap-1.5 font-medium"><MapPin className="w-4 h-4 text-primary" /> La Paz · Los Cabos · Todos Santos · La Ribera</p>
+          <p className="text-xs">© 2026 BAJA PROSERVICES. Todos los derechos reservados.</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
